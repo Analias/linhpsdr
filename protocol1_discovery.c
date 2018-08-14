@@ -71,7 +71,8 @@ static void discover(struct ifaddrs* iface) {
     interface_netmask.sin_addr.s_addr = mask->sin_addr.s_addr;
 
     // bind to this interface and the discovery port
-    interface_addr.sin_family = AF_INET;
+    //interface_addr.sin_family = AF_INET;
+    interface_addr.sin_family = iface->ifa_addr->sa_family;
     interface_addr.sin_addr.s_addr = sa->sin_addr.s_addr;
     //interface_addr.sin_port = htons(DISCOVERY_PORT*2);
     interface_addr.sin_port = htons(0); // system assigned port
@@ -92,7 +93,8 @@ static void discover(struct ifaddrs* iface) {
 
     // setup to address
     struct sockaddr_in to_addr={0};
-    to_addr.sin_family=AF_INET;
+    //to_addr.sin_family=AF_INET;
+    to_addr.sin_family = iface->ifa_addr->sa_family;
     to_addr.sin_port=htons(DISCOVERY_PORT);
     to_addr.sin_addr.s_addr=htonl(INADDR_BROADCAST);
 
@@ -118,7 +120,9 @@ static void discover(struct ifaddrs* iface) {
 
     if(sendto(discovery_socket,buffer,63,0,(struct sockaddr*)&to_addr,sizeof(to_addr))<0) {
         perror("discover: sendto socket failed for discovery_socket\n");
-        exit(-1);
+        if(errno!=EHOSTUNREACH && errno!=EADDRNOTAVAIL) {
+            exit(-1);
+        }
     }
 
     // wait for receive thread to complete
@@ -245,10 +249,10 @@ g_print("protocol1_discovery\n");
     ifa = addrs;
     while (ifa) {
         g_main_context_iteration(NULL, 0);
-        if (ifa->ifa_addr && ifa->ifa_addr->sa_family == AF_INET) {
+        if (ifa->ifa_addr && (ifa->ifa_addr->sa_family == AF_INET || ifa->ifa_addr->sa_family==AF_LOCAL)) {
             if((ifa->ifa_flags&IFF_UP)==IFF_UP
                 && (ifa->ifa_flags&IFF_RUNNING)==IFF_RUNNING
-                && (ifa->ifa_flags&IFF_LOOPBACK)!=IFF_LOOPBACK) {
+                /*&& (ifa->ifa_flags&IFF_LOOPBACK)!=IFF_LOOPBACK*/) {
                 discover(ifa);
             }
         }

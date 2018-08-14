@@ -12,10 +12,11 @@ GTKLIBS=`pkg-config --libs gtk+-3.0`
 
 AUDIO_LIBS=-lpulse-simple -lpulse -lpulse-mainloop-glib
 
-OPTIONS=-g -Wno-deprecated-declarations -D GIT_DATE='"$(GIT_DATE)"' -D GIT_VERSION='"$(GIT_VERSION)"' -O3
+OPTIONS=-g -Wno-deprecated-declarations -D GIT_DATE='"$(GIT_DATE)"' -D GIT_VERSION='"$(GIT_VERSION)"'
+#OPTIONS=-g -Wno-deprecated-declarations -D GIT_DATE='"$(GIT_DATE)"' -D GIT_VERSION='"$(GIT_VERSION)"' -O3
 #OPTIONS=-g -Wno-deprecated-declarations -D GIT_DATE='"$(GIT_DATE)"' -D GIT_VERSION='"$(GIT_VERSION)"' -O3 -D FT8_MARKER
 
-LIBS=-lrt -lm -lpthread -lwdsp
+LIBS=-lm -lpthread -lwdsp
 INCLUDES=$(GTKINCLUDES)
 
 COMPILE=$(CC) $(OPTIONS) $(INCLUDES)
@@ -181,20 +182,9 @@ clean:
 	-rm -f $(PROGRAM)
 
 install: $(PROGRAM)
-	sudo cp $(PROGRAM) /usr/local/bin
+	cp $(PROGRAM) /usr/local/bin
 	if [ ! -d ~/.local/share/linhpsdr ]; then mkdir ~/.local/share/linhpsdr; fi
-	if [ ! -d /usr/share/linhpsdr ]; then sudo mkdir /usr/share/linhpsdr; fi
-	sudo cp hpsdr.png /usr/share/linhpsdr
-	sudo cp hpsdr_icon.png /usr/share/linhpsdr
-	sudo cp hpsdr_small.png /usr/share/linhpsdr
-	sudo cp linhpsdr.desktop /usr/share/applications
-
-debian:
-	cp $(PROGRAM) pkg/linhpsdr/usr/local/bin
-	cp /usr/local/lib/libwdsp.so pkg/linhpsdr/usr/local/lib
-	cp hpsdr.png pkg/linhpsdr/usr/share/linhpsdr
-	cp hpsdr_icon.png pkg/linhpsdr/usr/share/linhpsdr
-	cp hpsdr_small.png pkg/linhpsdr/usr/share/linhpsdr
-	cp linhpsdr.desktop pkg/linhpsdr/usr/share/applications
-	cd pkg; dpkg-deb --build linhpsdr
-
+	if [ ! -d /usr/local/share/linhpsdr ]; then mkdir /usr/local/share/linhpsdr; fi
+	cp hpsdr.png /usr/local/share/linhpsdr
+	cp hpsdr_icon.png /usr/local/share/linhpsdr
+	cp hpsdr_small.png /usr/local/share/linhpsdr
