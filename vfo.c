@@ -829,6 +829,12 @@ static gboolean vfo_press_event_cb(GtkWidget *widget,GdkEventButton *event,gpoin
           choice->selection=7;
           g_signal_connect(menu_item,"activate",G_CALLBACK(zoom_cb),choice);
           gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
+          menu_item=gtk_menu_item_new_with_label("x9");
+          choice=g_new0(CHOICE,1);
+          choice->rx=rx;
+          choice->selection=9;
+          g_signal_connect(menu_item,"activate",G_CALLBACK(zoom_cb),choice);
+          gtk_menu_shell_append(GTK_MENU_SHELL(menu),menu_item);
           gtk_widget_show_all(menu);
 #if GTK_CHECK_VERSION(3,22,0)
           gtk_menu_popup_at_pointer(GTK_MENU(menu),(GdkEvent *)event);
